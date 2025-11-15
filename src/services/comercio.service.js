@@ -124,15 +124,14 @@ export const top5CadaSetorService = async (token) => {
 };
 
 //bff dando problema, verificar a api depois
-export const top5MultiplosSetoresService = async (setores) => {
+export const top5MultiplosSetoresService = async (setores, token) => {
   try {
-    // 🔹 Converte array em string separada por vírgulas, ex: "Eletrônicos,string"
     const setoresParam = setores.join(',');
 
     const response = await axios.get(`${API_URL}/top5/setores`, {
       params: { setores: setoresParam },
       headers: {
-        "Content-Type": "application/json",
+        Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
       },
     });
 
@@ -148,5 +147,6 @@ export const top5MultiplosSetoresService = async (setores) => {
     };
   }
 };
+
 
 

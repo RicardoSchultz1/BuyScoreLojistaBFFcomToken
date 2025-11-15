@@ -1,57 +1,85 @@
 import {
-    listarComprasService,
-    buscarCompraPorIdService,
-    buscarComprasPorClienteService,
-    buscarComprasPorProdutoService,
-    buscarComprasPorStatusService,
-    confirmarCompraService,
-    cancelarCompraService,
-    removerCompraService,
-    criarCompraService,
+  listarComprasService,
+  buscarCompraPorIdService,
+  buscarComprasPorClienteService,
+  buscarComprasPorProdutoService,
+  buscarComprasPorStatusService,
+  confirmarCompraService,
+  cancelarCompraService,
+  removerCompraService,
+  criarCompraService,
 } from "../services/compra.service.js";
 
-export const listarComprasController = async (req, res) => {
-    try {
-        const compras = await listarComprasService();
 
-        return res.status(200).json({
-            sucesso: true,
-            compras,
-        });
-    } catch (error) {
-        return res.status(error.status || 500).json({
-            sucesso: false,
-            mensagem: error.mensagem || "Erro interno no BFF",
-        });
-    }
+// 🔹 Função padrão de validação do token
+const validarToken = (req, res) => {
+  const token = req.headers.authorization;
+
+  if (!token || token.trim() === "") {
+    res.status(401).json({
+      sucesso: false,
+      mensagem: "Token não fornecido",
+    });
+    return null;
+  }
+
+  return token;
 };
+
+
+export const listarComprasController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
+  try {
+    const compras = await listarComprasService(token);
+
+    return res.status(200).json({
+      sucesso: true,
+      compras,
+    });
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      sucesso: false,
+      mensagem: error.mensagem || "Erro interno no BFF",
+    });
+  }
+};
+
 
 export const buscarCompraPorIdController = async (req, res) => {
-    const { id } = req.params;
+  const token = validarToken(req, res);
+  if (!token) return;
 
-    if (!id) {
-        return res.status(400).json({
-            sucesso: false,
-            mensagem: "ID não fornecido",
-        });
-    }
+  const { id } = req.params;
 
-    try {
-        const compra = await buscarCompraPorIdService(id);
+  if (!id) {
+    return res.status(400).json({
+      sucesso: false,
+      mensagem: "ID não fornecido",
+    });
+  }
 
-        return res.status(200).json({
-            sucesso: true,
-            compra,
-        });
-    } catch (error) {
-        return res.status(error.status || 500).json({
-            sucesso: false,
-            mensagem: error.mensagem || "Erro interno no BFF",
-        });
-    }
+  try {
+    const compra = await buscarCompraPorIdService(id, token);
+
+    return res.status(200).json({
+      sucesso: true,
+      compra,
+    });
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      sucesso: false,
+      mensagem: error.mensagem || "Erro interno no BFF",
+    });
+  }
 };
 
+
 export const buscarComprasPorClienteController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
   const { clienteId } = req.params;
 
   if (!clienteId) {
@@ -62,7 +90,7 @@ export const buscarComprasPorClienteController = async (req, res) => {
   }
 
   try {
-    const compras = await buscarComprasPorClienteService(clienteId);
+    const compras = await buscarComprasPorClienteService(clienteId, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -76,7 +104,11 @@ export const buscarComprasPorClienteController = async (req, res) => {
   }
 };
 
+
 export const buscarComprasPorProdutoController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
   const { produtoId } = req.params;
 
   if (!produtoId) {
@@ -87,7 +119,7 @@ export const buscarComprasPorProdutoController = async (req, res) => {
   }
 
   try {
-    const compras = await buscarComprasPorProdutoService(produtoId);
+    const compras = await buscarComprasPorProdutoService(produtoId, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -101,7 +133,11 @@ export const buscarComprasPorProdutoController = async (req, res) => {
   }
 };
 
+
 export const buscarComprasPorStatusController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
   const { status } = req.params;
 
   if (!status) {
@@ -112,7 +148,7 @@ export const buscarComprasPorStatusController = async (req, res) => {
   }
 
   try {
-    const compras = await buscarComprasPorStatusService(status);
+    const compras = await buscarComprasPorStatusService(status, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -121,13 +157,16 @@ export const buscarComprasPorStatusController = async (req, res) => {
   } catch (error) {
     return res.status(error.status || 500).json({
       sucesso: false,
-      mensagem:
-        error.mensagem || "Erro interno no BFF",
+      mensagem: error.mensagem || "Erro interno no BFF",
     });
   }
 };
+
 
 export const confirmarCompraController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
   const { id } = req.params;
 
   if (!id) {
@@ -138,7 +177,7 @@ export const confirmarCompraController = async (req, res) => {
   }
 
   try {
-    const compra = await confirmarCompraService(id);
+    const compra = await confirmarCompraService(id, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -151,8 +190,12 @@ export const confirmarCompraController = async (req, res) => {
     });
   }
 };
+
 
 export const cancelarCompraController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
   const { id } = req.params;
 
   if (!id) {
@@ -163,7 +206,7 @@ export const cancelarCompraController = async (req, res) => {
   }
 
   try {
-    const compra = await cancelarCompraService(id);
+    const compra = await cancelarCompraService(id, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -177,7 +220,11 @@ export const cancelarCompraController = async (req, res) => {
   }
 };
 
+
 export const removerCompraController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
   const { id } = req.params;
 
   if (!id) {
@@ -188,7 +235,7 @@ export const removerCompraController = async (req, res) => {
   }
 
   try {
-    await removerCompraService(id);
+    await removerCompraService(id, token);
 
     return res.status(204).send(); // NoContent
   } catch (error) {
@@ -199,16 +246,12 @@ export const removerCompraController = async (req, res) => {
   }
 };
 
-export const criarCompraController = async (req, res) => {
-  const token = req.headers.authorization;
-  const body = req.body;
 
-  if (!token) {
-    return res.status(401).json({
-      sucesso: false,
-      mensagem: "Token não fornecido",
-    });
-  }
+export const criarCompraController = async (req, res) => {
+  const token = validarToken(req, res);
+  if (!token) return;
+
+  const body = req.body;
 
   if (!body || !body.produtoId || !body.quantidade) {
     return res.status(400).json({

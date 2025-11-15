@@ -33,32 +33,34 @@ export const criarEnderecoController = async (req, res) => {
 };
 
 export const enderecoIDController = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
+  const token = req.headers.authorization;
 
-    if (!id) {
-        return res.status(400).json({
-            sucesso: false,
-            mensagem: "ID do endereço não fornecido",
-        });
-    }
+  if (!id) {
+    return res.status(400).json({
+      sucesso: false,
+      mensagem: "ID do endereço não fornecido",
+    });
+  }
 
-    try {
-        const endereco = await enderecoIDService(id);
+  try {
+    const endereco = await enderecoIDService(id, token);
 
-        return res.status(200).json({
-            sucesso: true,
-            endereco,
-        });
-    } catch (error) {
-        return res.status(error.status || 500).json({
-            sucesso: false,
-            mensagem: error.mensagem || "Erro interno no BFF",
-        });
-    }
+    return res.status(200).json({
+      sucesso: true,
+      endereco,
+    });
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      sucesso: false,
+      mensagem: error.mensagem || "Erro interno no BFF",
+    });
+  }
 };
 
 export const atualizarEnderecoController = async (req, res) => {
   const body = req.body;
+  const token = req.headers.authorization;
 
   if (!body || Object.keys(body).length === 0) {
     return res.status(400).json({
@@ -68,7 +70,7 @@ export const atualizarEnderecoController = async (req, res) => {
   }
 
   try {
-    const data = await atualizarEnderecoService(body);
+    const data = await atualizarEnderecoService(body, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -84,6 +86,7 @@ export const atualizarEnderecoController = async (req, res) => {
 
 export const removerEnderecoController = async (req, res) => {
   const { id } = req.params;
+  const token = req.headers.authorization;
 
   if (!id) {
     return res.status(400).json({
@@ -93,7 +96,7 @@ export const removerEnderecoController = async (req, res) => {
   }
 
   try {
-    const data = await removerEnderecoService(id);
+    const data = await removerEnderecoService(id, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -109,6 +112,7 @@ export const removerEnderecoController = async (req, res) => {
 
 export const buscarEnderecoPorCepController = async (req, res) => {
   const { cep } = req.body;
+  const token = req.headers.authorization;
 
   if (!cep) {
     return res.status(400).json({
@@ -118,7 +122,7 @@ export const buscarEnderecoPorCepController = async (req, res) => {
   }
 
   try {
-    const endereco = await buscarEnderecoPorCepService(cep);
+    const endereco = await buscarEnderecoPorCepService(cep, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -133,8 +137,10 @@ export const buscarEnderecoPorCepController = async (req, res) => {
 };
 
 export const listarEnderecosController = async (req, res) => {
+  const token = req.headers.authorization;
+
   try {
-    const enderecos = await listarEnderecosService();
+    const enderecos = await listarEnderecosService(token);
 
     return res.status(200).json({
       sucesso: true,

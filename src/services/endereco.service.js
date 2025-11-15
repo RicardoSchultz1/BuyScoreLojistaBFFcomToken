@@ -24,7 +24,7 @@ export const criarEnderecoService = async (endereco) => {
   }
 };
 
-export const enderecoIDService = async (id) => {
+export const enderecoIDService = async (id, token) => {
   if (!id) {
     throw {
       status: 400,
@@ -33,67 +33,11 @@ export const enderecoIDService = async (id) => {
   }
 
   try {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data; // retorna objeto Endereco
-  } catch (error) {
-    console.error("Erro ao chamar API:", error.message);
-    throw {
-      status: error.response?.status,
-      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
-    };
-  }
-};
-
-export const atualizarEnderecoService = async (endereco) => {
-  if (!endereco || Object.keys(endereco).length === 0) {
-    throw {
-      status: 400,
-      mensagem: "Objeto Endereço inválido ou vazio",
-    };
-  }
-
-  try {
-    await axios.put(`${API_URL}`, endereco);
-    return { mensagem: "Endereço atualizado com sucesso" };
-  } catch (error) {
-    console.error("Erro ao chamar API:", error.message);
-    throw {
-      status: error.response?.status,
-      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
-    };
-  }
-};
-
-export const removerEnderecoService = async (id) => {
-  if (!id) {
-    throw {
-      status: 400,
-      mensagem: "ID do endereço não fornecido",
-    };
-  }
-
-  try {
-    await axios.delete(`${API_URL}/${id}`);
-    return { mensagem: "Endereço removido com sucesso" };
-  } catch (error) {
-    console.error("Erro ao chamar API:", error.message);
-    throw {
-      status: error.response?.status,
-      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
-    };
-  }
-};
-
-export const buscarEnderecoPorCepService = async (cep) => {
-  if (!cep) {
-    throw {
-      status: 400,
-      mensagem: "CEP não fornecido",
-    };
-  }
-
-  try {
-    const response = await axios.post(`${API_URL}/cep`, cep);
+    const response = await axios.get(`${API_URL}/${id}`, {
+      headers: {
+        Authorization: token?.startsWith("Bearer ") ? token : `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Erro ao chamar API:", error.message);
@@ -104,9 +48,88 @@ export const buscarEnderecoPorCepService = async (cep) => {
   }
 };
 
-export const listarEnderecosService = async () => {
+export const atualizarEnderecoService = async (endereco, token) => {
+  if (!endereco || Object.keys(endereco).length === 0) {
+    throw {
+      status: 400,
+      mensagem: "Objeto Endereço inválido ou vazio",
+    };
+  }
+
   try {
-    const response = await axios.get(`${API_URL}/all`);
+    const response = await axios.put(`${API_URL}`, endereco, {
+      headers: {
+        Authorization: token?.startsWith("Bearer ") ? token : `Bearer ${token}`,
+      },
+    });
+
+    return { mensagem: "Endereço atualizado com sucesso" };
+  } catch (error) {
+    console.error("Erro ao chamar API:", error.message);
+    throw {
+      status: error.response?.status,
+      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
+    };
+  }
+};
+
+export const removerEnderecoService = async (id, token) => {
+  if (!id) {
+    throw {
+      status: 400,
+      mensagem: "ID do endereço não fornecido",
+    };
+  }
+
+  try {
+    await axios.delete(`${API_URL}/${id}`, {
+      headers: {
+        Authorization: token?.startsWith("Bearer ") ? token : `Bearer ${token}`,
+      },
+    });
+
+    return { mensagem: "Endereço removido com sucesso" };
+  } catch (error) {
+    console.error("Erro ao chamar API:", error.message);
+    throw {
+      status: error.response?.status,
+      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
+    };
+  }
+};
+
+export const buscarEnderecoPorCepService = async (cep, token) => {
+  if (!cep) {
+    throw {
+      status: 400,
+      mensagem: "CEP não fornecido",
+    };
+  }
+
+  try {
+    const response = await axios.post(`${API_URL}/cep`, cep, {
+      headers: {
+        Authorization: token?.startsWith("Bearer ") ? token : `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao chamar API:", error.message);
+    throw {
+      status: error.response?.status,
+      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
+    };
+  }
+};
+
+export const listarEnderecosService = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/all`, {
+      headers: {
+        Authorization: token?.startsWith("Bearer ") ? token : `Bearer ${token}`,
+      },
+    });
+
     return response.data;
   } catch (error) {
     console.error("Erro ao chamar API:", error.message);

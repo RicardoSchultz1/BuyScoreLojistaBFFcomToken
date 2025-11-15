@@ -120,6 +120,7 @@ export const top5CadaSetorController = async (req, res) => {
 
 export const top5MultiplosSetoresController = async (req, res) => {
   const { setores } = req.query;
+  const token = req.headers.authorization;
 
   if (!setores || (Array.isArray(setores) && setores.length === 0)) {
     return res.status(400).json({
@@ -128,10 +129,17 @@ export const top5MultiplosSetoresController = async (req, res) => {
     });
   }
 
+  if (!token || token.trim() === "") {
+    return res.status(401).json({
+      sucesso: false,
+      mensagem: "Token não enviado",
+    });
+  }
+
   const setoresArray = Array.isArray(setores) ? setores : [setores];
 
   try {
-    const comercios = await top5MultiplosSetoresService(setoresArray);
+    const comercios = await top5MultiplosSetoresService(setoresArray, token);
 
     return res.status(200).json({
       sucesso: true,
@@ -144,4 +152,5 @@ export const top5MultiplosSetoresController = async (req, res) => {
     });
   }
 };
+
 
