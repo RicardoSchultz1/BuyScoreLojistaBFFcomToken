@@ -194,3 +194,27 @@ export const criarProdutoService = async (body, token) => {
     };
   }
 };
+
+export const produtosPorComercioService = async (comercioId, token) => {
+  if (!comercioId) {
+    throw {
+      status: 400,
+      mensagem: "ID do comércio não fornecido",
+    };
+  }
+
+  try {
+    const response = await axios.get(`${API_URL}/comercio/${comercioId}`, {
+      headers: {
+        Authorization: token?.startsWith('Bearer ') ? token : `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar produtos por comércio:", error.message);
+    throw {
+      status: error.response?.status || 500,
+      mensagem: error.response?.data?.mensagem || error.response?.data?.message || "Erro na comunicação com a API",
+    };
+  }
+};

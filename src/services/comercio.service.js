@@ -186,3 +186,25 @@ export const atualizarComercioService = async (token, comercio) => {
     };
   }
 };
+
+export const topComerciosPorSeguimentoService = async (seguimento, limite, token) => {
+  try {
+    const url = `http://localhost:8081/comercio/top-seguimento?seguimento=${seguimento}&limite=${limite}`;
+    console.log("URL da requisição para API:", url);
+    
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao chamar API topComerciosPorSeguimento:", error.message);
+    throw {
+      status: error.response?.status,
+      mensagem: error.response?.data?.mensagem || "Erro na comunicação com a API",
+    };
+  }
+};

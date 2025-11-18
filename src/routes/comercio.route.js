@@ -8,12 +8,11 @@ import {
     top5CadaSetorController,
     top5MultiplosSetoresController,
     buscarmeucomercioController,
-    atualizarComercioController
+    atualizarComercioController,
+    topComerciosPorSeguimentoController
 } from "../controllers/comercio.controller.js";
 
 const router = express.Router();
-
-router.get("/:id", buscarComercioPorIdController);
 
 router.post("/", criarComercioController);
 
@@ -30,5 +29,9 @@ router.get("/top5/setores-principais", top5SetoresPrincipaisController);
 router.get("/top5/cada-setor", top5CadaSetorController);
 
 router.get("/top5/multiplos-setores", top5MultiplosSetoresController);
+
+router.get("/top-seguimento", topComerciosPorSeguimentoController);
+
+router.get("/:id", buscarComercioPorIdController);
 
 export default router;

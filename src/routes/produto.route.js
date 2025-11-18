@@ -6,7 +6,8 @@ import { produtoIDController,
     desativarProdutoController,
     atualizarProdutoController,
     criarProdutoController,
-    meusProdutosController
+    meusProdutosController,
+    produtosPorComercioController
  } from "../controllers/produto.controller.js";
 
 const router = express.Router();
@@ -24,6 +25,8 @@ router.put("/", atualizarProdutoController);
 router.post("/", criarProdutoController);
 
 router.delete("/:id", removerProdutoController);
+
+router.get("/comercio/:comercioId", produtosPorComercioController);
 
 router.get("/:id", produtoIDController);
 

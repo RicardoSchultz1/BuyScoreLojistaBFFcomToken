@@ -7,7 +7,8 @@ import {
   top5CadaSetorService,
   top5MultiplosSetoresService,
   buscarmeucomercioService,
-  atualizarComercioService
+  atualizarComercioService,
+  topComerciosPorSeguimentoService
 } from "../services/comercio.service.js";
 
 export const buscarComercioPorIdController = async (req, res) => {
@@ -219,6 +220,35 @@ export const atualizarComercioController = async (req, res) => {
     }
 
     return res.status(status).json({
+      sucesso: false,
+      mensagem: error.mensagem || "Erro interno no BFF",
+    });
+  }
+};
+
+export const topComerciosPorSeguimentoController = async (req, res) => {
+  const { seguimento, limite } = req.query;
+  const token = req.headers.authorization;
+
+  console.log("Query params recebidos:", req.query);
+  console.log("Seguimento:", seguimento);
+  console.log("Limite:", limite);
+
+  if (!seguimento) {
+    return res.status(400).json({ sucesso: false, mensagem: "Seguimento não fornecido" });
+  }
+  if (!limite) {
+    return res.status(400).json({ sucesso: false, mensagem: "Limite não fornecido" });
+  }
+  if (!token) {
+    return res.status(401).json({ sucesso: false, mensagem: "Token não enviado" });
+  }
+
+  try {
+    const comercios = await topComerciosPorSeguimentoService(seguimento, limite, token);
+    return res.status(200).json({ sucesso: true, comercios });
+  } catch (error) {
+    return res.status(error.status || 500).json({
       sucesso: false,
       mensagem: error.mensagem || "Erro interno no BFF",
     });

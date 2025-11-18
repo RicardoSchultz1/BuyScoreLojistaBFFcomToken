@@ -5,7 +5,8 @@ import { produtoIDService,
     desativarProdutoService,
     atualizarProdutoService, 
     criarProdutoService,
-    meusProdutosService
+    meusProdutosService,
+    produtosPorComercioService
 } from "../services/produto.service.js";
 
 export const produtoIDController = async (req, res) => {
@@ -289,6 +290,44 @@ export const criarProdutoController = async (req, res) => {
       });
     }
 
+    return res.status(status).json({
+      sucesso: false,
+      mensagem: error.mensagem || "Erro interno no BFF",
+    });
+  }
+};
+
+export const produtosPorComercioController = async (req, res) => {
+  const { comercioId } = req.params;
+  const token = req.headers.authorization;
+
+  if (!comercioId) {
+    return res.status(400).json({
+      sucesso: false,
+      mensagem: "ID do comércio não fornecido",
+    });
+  }
+
+  if (!token) {
+    return res.status(401).json({ sucesso: false, mensagem: "Token não enviado" });
+  }
+
+  try {
+    const produtos = await produtosPorComercioService(comercioId, token);
+
+    return res.status(200).json({
+      sucesso: true,
+      produtos,
+    });
+  } catch (error) {
+    console.error('Erro no produtosPorComercioController:', error);
+    const status = error.status || 500;
+    if (status === 403) {
+      return res.status(403).json({
+        sucesso: false,
+        mensagem: "Acesso negado. Verifique suas permissões ou token de autenticação.",
+      });
+    }
     return res.status(status).json({
       sucesso: false,
       mensagem: error.mensagem || "Erro interno no BFF",
