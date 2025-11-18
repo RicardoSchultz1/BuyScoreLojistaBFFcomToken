@@ -41,7 +41,6 @@ export const cadastroController = async (req, res) => {
 
   // Validação dos campos obrigatórios
   if (
-    !perfilUsuario ||
     !nome ||
     !email ||
     !senha ||
